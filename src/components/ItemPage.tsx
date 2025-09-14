@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Star, Clock, Shield, MessageCircle, Phone, Heart, Share2 } from 'lucide-react';
+import { ArrowLeft, MapPin, Star, Clock, Shield, MessageCircle, Phone, Heart, Share2, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { MarketplaceItem } from '../types';
 import { SEOHead } from './SEOHead';
 
@@ -11,6 +11,7 @@ interface ItemPageProps {
 export const ItemPage: React.FC<ItemPageProps> = ({ items }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
   
   const item = items.find(item => item.id === id);
 
@@ -50,6 +51,23 @@ export const ItemPage: React.FC<ItemPageProps> = ({ items }) => {
     }
   };
 
+  // For demo purposes, let's create multiple images from the single image
+  const itemImages = item ? [
+    item.image,
+    'https://images.pexels.com/photos/1649771/pexels-photo-1649771.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/276517/pexels-photo-276517.jpeg?auto=compress&cs=tinysrgb&w=500',
+  ] : [];
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % itemImages.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + itemImages.length) % itemImages.length);
+  };
+
+
   return (
     <>
       <SEOHead
@@ -76,13 +94,84 @@ export const ItemPage: React.FC<ItemPageProps> = ({ items }) => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column - Images */}
         <div className="lg:col-span-2">
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9]">
-  <img
-    src={item.image}
-    alt={item.title}
-    className="w-full h-full object-cover"
-  />
-</div>
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="relative overflow-hidden">
+              <img
+                src={itemImages[currentImageIndex]}
+                alt={item.title}
+                className="w-full h-96 lg:h-[500px] object-cover transition-all duration-500 ease-in-out transform"
+                style={{
+                  transform: `translateX(-${currentImageIndex * 0}%)`,
+                }}
+              />
+              
+              {/* Image Navigation - only show if more than 1 image */}
+              {itemImages.length > 1 && (
+                <>
+                  <button
+                    onClick={prevImage}
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full transition-all duration-200 hover:scale-110"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                  <button
+                    onClick={nextImage}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full transition-all duration-200 hover:scale-110"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+                  
+                  {/* Image indicators */}
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                    {itemImages.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentImageIndex(index)}
+                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                          index === currentImageIndex
+                            ? 'bg-white'
+                            : 'bg-white bg-opacity-50 hover:bg-opacity-75'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+              
+              {/* Image counter */}
+              {itemImages.length > 1 && (
+                <div className="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm transition-all duration-300">
+                  {currentImageIndex + 1} / {itemImages.length}
+                </div>
+              )}
+            </div>
+            
+            {/* Thumbnail strip - only show if more than 1 image */}
+            {itemImages.length > 1 && (
+              <div className="p-4 border-t border-gray-200">
+                <div className="flex space-x-2 overflow-x-auto scrollbar-hide">
+                  {itemImages.map((image, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentImageIndex(index)}
+                      className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-300 hover:scale-105 ${
+                        index === currentImageIndex
+                          ? 'border-blue-500'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <img
+                        src={image}
+                        alt={`${item.title} ${index + 1}`}
+                        className="w-full h-full object-cover transition-all duration-200"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          
           {/* Description Section */}
           <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Details</h2>
@@ -100,7 +189,7 @@ export const ItemPage: React.FC<ItemPageProps> = ({ items }) => {
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">{item.title}</h1>
                 <div className="text-3xl font-bold text-blue-600 mb-3">
-                  ${item.price.toLocaleString()}
+                  ₱{item.price.toLocaleString()}
                 </div>
               </div>
               <div className="flex space-x-2">
