@@ -31,7 +31,6 @@ export const CategorySection: React.FC<CategorySectionProps> = ({
     <div className="mb-8">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <span className="text-2xl">{categoryIcon}</span>
           <h2 className="text-xl font-bold text-gray-900">{categoryName}</h2>
           <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-sm">
             {items.length}

@@ -37,7 +37,6 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
                   : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
               }`}
             >
-              <span>{category.icon}</span>
               <span className="text-sm font-medium">{category.name}</span>
               <span className="text-xs bg-white bg-opacity-20 px-2 py-1 rounded-full">
                 {category.count}

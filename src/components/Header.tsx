@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus, ShoppingBag } from 'lucide-react';
+import { Search, Plus, ShoppingBag, User } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface HeaderProps {
   searchQuery: string;
@@ -10,6 +11,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ searchQuery, onSearchChange, onAddItemClick }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,8 +32,8 @@ export const Header: React.FC<HeaderProps> = ({ searchQuery, onSearchChange, onA
             <div className="bg-blue-600 p-2 rounded-lg">
               <ShoppingBag className="w-6 h-6 text-white" />
             </div>
-            <div className="items-left">
-              <h1 className="text-xl font-bold text-gray-900">CDOAds</h1>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900 text-left">CDOAds</h1>
               <p className="text-xs text-gray-500">Cagayan De Oro Marketplace</p>
             </div>
           </button>
@@ -50,14 +52,40 @@ export const Header: React.FC<HeaderProps> = ({ searchQuery, onSearchChange, onA
             </form>
           </div>
 
-          {/* Add Item Button */}
-          <button
-            onClick={onAddItemClick}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            <span className="hidden sm:inline">Sell</span>
-          </button>
+          {/* Right Side Actions */}
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={onAddItemClick}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+            >
+              <Plus className="w-5 h-5" />
+              <span className="hidden sm:inline">Sell</span>
+            </button>
+            
+            {user ? (
+              <button
+                onClick={() => navigate('/profile')}
+                className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <img
+                  src={user.user_metadata?.avatar_url || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=40'}
+                  alt="Profile"
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+                <span className="hidden md:inline text-gray-700">
+                  {user.user_metadata?.full_name || user.phone || 'Profile'}
+                </span>
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate('/login')}
+                className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <User className="w-5 h-5" />
+                <span className="hidden sm:inline">Sign In</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </header>

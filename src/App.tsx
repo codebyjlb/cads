@@ -1,20 +1,23 @@
 import React, { useState, useMemo } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { SEOHead } from './components/SEOHead';
 import { Header } from './components/Header';
 import { CategoryFilter } from './components/CategoryFilter';
 import { ItemGrid } from './components/ItemGrid';
-import { AddItemModal } from './components/AddItemModal';
 import { ItemPage } from './components/ItemPage';
 import { CategoryPage } from './components/CategoryPage';
 import { SearchPage } from './components/SearchPage';
-import { SEOHead } from './components/SEOHead';
+import { LoginPage } from './components/LoginPage';
+import { ProfilePage } from './components/ProfilePage';
+import { ListItemPage } from './components/ListItemPage';
 import { categories, mockItems } from './data/mockData';
 import { MarketplaceItem } from './types';
 
 function App() {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [items, setItems] = useState<MarketplaceItem[]>(mockItems);
 
   const filteredItems = useMemo(() => {
@@ -39,7 +42,7 @@ function App() {
   const HomePage = () => (
     <>
       <SEOHead
-        title="CDOADS - Cagayan De Oro Marketplace | Buy & Sell Locally"
+        title="CDOAds - Cagayan De Oro Marketplace | Buy & Sell Locally"
         description="Discover amazing deals on electronics, furniture, clothing, and more. Buy and sell items locally on CityMarket - your trusted local marketplace."
         url={window.location.origin}
       />
@@ -69,26 +72,31 @@ function App() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onAddItemClick={() => setIsAddModalOpen(true)}
-      />
-      
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/item/:id" element={<ItemPage items={items} />} />
-        <Route path="/category/:categoryId" element={<CategoryPage items={items} />} />
-        <Route path="/search" element={<SearchPage items={items} />} />
-      </Routes>
-      
-      <AddItemModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSubmit={handleAddItem}
-      />
-    </div>
+    <AuthProvider>
+      <div className="min-h-screen bg-gray-50">
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/*" element={
+            <>
+              <Header
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                onAddItemClick={() => navigate('/list')}
+              />
+              
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/item/:id" element={<ItemPage items={items} />} />
+                <Route path="/category/:categoryId" element={<CategoryPage items={items} />} />
+                <Route path="/search" element={<SearchPage items={items} />} />
+                <Route path="/list" element={<ListItemPage onSubmit={handleAddItem} />} />
+              </Routes>
+            </>
+          } />
+        </Routes>
+      </div>
+    </AuthProvider>
   );
 }
 

@@ -62,7 +62,6 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ items }) => {
                 </button>
                 
                 <div className="flex items-center space-x-3">
-                  <span className="text-2xl">{categoryIcon}</span>
                   <div>
                     <h1 className="text-2xl font-bold text-gray-900">{categoryName}</h1>
                     <p className="text-sm text-gray-600">
@@ -91,7 +90,9 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ items }) => {
           {categoryItems.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-gray-400 mb-4">
-                <span className="text-6xl">{categoryIcon}</span>
+                <div className="w-16 h-16 mx-auto bg-gray-200 rounded-lg flex items-center justify-center">
+                  <span className="text-2xl text-gray-400">📦</span>
+                </div>
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">
                 No {categoryName.toLowerCase()} items found
@@ -107,7 +108,7 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ items }) => {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
               {categoryItems.map((item) => (
                 <ItemCard key={item.id} item={item} />
               ))}
